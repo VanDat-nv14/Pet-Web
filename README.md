@@ -22,6 +22,7 @@
 - [Yêu cầu hệ thống](#-yêu-cầu-hệ-thống)
 - [Hướng dẫn cài đặt](#-hướng-dẫn-cài-đặt)
 - [Cấu hình môi trường](#-cấu-hình-môi-trường)
+- [Cách backend đọc secret (.env)](#cách-backend-đọc-secret-env)
 - [Chạy dự án](#-chạy-dự-án)
 - [API Documentation](#-api-documentation)
 - [Tài khoản mặc định](#-tài-khoản-mặc-định)
@@ -101,6 +102,7 @@
 | SignalR | 8.x | Real-time Communication |
 | MailKit / SmtpClient | - | Email Service |
 | Google OAuth 2.0 | - | Social Login |
+| DotNetEnv | 3.x | Đọc file `.env`, map sang biến môi trường (secret local) |
 
 ### Frontend
 | Công nghệ | Phiên bản | Mô tả |
@@ -139,8 +141,11 @@ Pet-Web/
 │       ├── Services/                 # Business Logic Layer
 │       │   ├── Interfaces/
 │       │   └── Implementations/
-│       ├── appsettings.example.json  # Cấu hình mẫu (copy → appsettings.json)
-│       └── Program.cs
+│       ├── appsettings.json          # Cấu hình mặc định (đã commit, không chứa secret)
+│       ├── appsettings.example.json  # Tham khảo JSON (tùy chọn)
+│       ├── .env.example              # Mẫu biến môi trường → copy thành `.env`
+│       ├── .env                      # Secret thật (tạo local, không commit)
+│       └── Program.cs                # Load `.env` trước WebApplication.CreateBuilder
 │
 ├── pet_web/                          # Frontend - React.js
 │   ├── src/
@@ -203,16 +208,19 @@ cd Pet-Web
 cd BE_PetWeb_API/BE_PetWeb_API
 ```
 
-**Sao chép file cấu hình:**
+**Tạo file chứa secret (bắt buộc để chạy đủ tính năng):**
+
 ```bash
 # Windows
-copy appsettings.example.json appsettings.json
+copy .env.example .env
 
 # macOS / Linux
-cp appsettings.example.json appsettings.json
+cp .env.example .env
 ```
 
-Mở `appsettings.json` và điền các thông tin cần thiết (xem phần [Cấu hình môi trường](#-cấu-hình-môi-trường)).
+Mở `.env` và điền Google OAuth, Gmail App Password, chuỗi kết nối SQL Server, JWT key (xem [Cấu hình môi trường](#-cấu-hình-môi-trường)).
+
+File `appsettings.json` trong repo giữ cấu trúc và giá trị không nhạy cảm; các giá trị rỗng hoặc mặc định sẽ được **ghi đè** bởi biến trong `.env` khi ứng dụng khởi động.
 
 **Restore packages:**
 ```bash
@@ -248,47 +256,50 @@ Mở `.env.development` và điền URL API backend.
 
 ## ⚙️ Cấu Hình Môi Trường
 
-### Backend: `appsettings.json`
+### Backend: file `.env` (secret — không commit)
 
-```json
-{
-    "Authentication": {
-        "Google": {
-            "ClientId": "YOUR_GOOGLE_CLIENT_ID",
-            "ClientSecret": "YOUR_GOOGLE_CLIENT_SECRET"
-        }
-    },
-    "EmailSettings": {
-        "SmtpServer": "smtp.gmail.com",
-        "SmtpPort": 587,
-        "Username": "your_email@gmail.com",
-        "Password": "YOUR_GMAIL_APP_PASSWORD",
-        "FromEmail": "your_email@gmail.com",
-        "FromName": "Pet Web Services"
-    },
-    "ConnectionStrings": {
-        "PetWebConnection": "Server=YOUR_SERVER;Database=PetWeb;Integrated Security=True;..."
-    },
-    "JWT": {
-        "Key": "YOUR_SECRET_KEY_MIN_32_CHARS",
-        "Issuer": "PetWebAPI",
-        "Audience": "PetWebClient",
-        "DurationInMinutes": 60
-    }
-}
-```
+Toàn bộ giá trị nhạy cảm nên đặt trong `BE_PetWeb_API/BE_PetWeb_API/.env`. Sao chép từ `.env.example` rồi sửa.
 
-> **Lưu ý quan trọng:**
-> - `Google ClientId/Secret`: Lấy từ [Google Cloud Console](https://console.cloud.google.com/)
-> - `Gmail App Password`: Bật 2FA cho Gmail, sau đó tạo App Password tại [myaccount.google.com](https://myaccount.google.com/apppasswords)
-> - `JWT Key`: Chuỗi bí mật, tối thiểu 32 ký tự
-> - `ConnectionStrings`: Thay `YOUR_SERVER` bằng tên SQL Server instance của bạn
+ASP.NET Core map biến môi trường sang cấu hình lồng nhau bằng **`__` (hai dấu gạch dưới)** thay cho `:` trong JSON. Ví dụ:
+
+| Trong `.env` | Tương đương trong config |
+|--------------|---------------------------|
+| `JWT__Key=...` | `JWT:Key` |
+| `Authentication__Google__ClientId=...` | `Authentication:Google:ClientId` |
+| `ConnectionStrings__PetWebConnection=...` | `ConnectionStrings:PetWebConnection` |
+
+Nội dung mẫu đầy đủ nằm trong `.env.example`. Các mục cần điền:
+
+- **Google OAuth**: [Google Cloud Console](https://console.cloud.google.com/)
+- **Gmail**: App Password sau khi bật 2FA — [Google Account](https://myaccount.google.com/apppasswords)
+- **JWT `JWT__Key`**: chuỗi bí mật, nên ≥ 32 ký tự
+- **`ConnectionStrings__PetWebConnection`**: đổi server/instance SQL Server cho máy bạn
+
+### Backend: `appsettings.json` (đã có trong repo)
+
+File này giữ **cấu trúc** và các giá trị không bí mật (ví dụ URL frontend, timezone, tên issuer JWT). Các trường secret có thể để trống; khi có `.env`, chúng được lấp bởi biến môi trường. Bạn có thể tham chiếu thêm `appsettings.example.json` nếu muốn ví dụ JSON đầy đủ.
+
+### Tùy chọn: `appsettings.Development.json`
+
+Nếu bạn tạo file này cục bộ để override config, nhớ file đó **được liệt kê trong `.gitignore`** và không đẩy lên Git.
 
 ### Frontend: `.env.development`
 
 ```env
 REACT_APP_API_URL=http://localhost:5181/api
 ```
+
+Tạo từ `pet_web/.env.example` (copy thành `.env.development`). Đổi URL nếu backend chạy HTTPS hoặc cổng khác.
+
+---
+
+## Cách backend đọc secret (.env)
+
+1. **Package** [DotNetEnv](https://www.nuget.org/packages/DotNetEnv) được khai báo trong `BE_PetWeb_API.csproj`.
+2. **`Program.cs`** gọi `DotNetEnv.Env.Load(".env")` **trước** `WebApplication.CreateBuilder(args)` để đưa các dòng trong `.env` vào biến môi trường của process.
+3. **`WebApplication.CreateBuilder`** tự gộp `appsettings.json` + biến môi trường; biến môi trường **ghi đè** giá trị trùng key trong JSON.
+
+Chạy `dotnet run` từ thư mục project API thường đặt working directory đúng chỗ file `.env`. Nếu chạy từ thư mục khác mà không thấy config, kiểm tra đường dẫn tới `.env`.
 
 ---
 
