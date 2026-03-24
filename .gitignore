@@ -1,0 +1,76 @@
+# ===========================
+# SECRETS & ENVIRONMENT FILES
+# ===========================
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+!appsettings.example.json
+
+# ===========================
+# NODE / REACT (Frontend)
+# ===========================
+pet_web/node_modules/
+pet_web/build/
+pet_web/.pnp
+pet_web/.pnp.js
+pet_web/coverage/
+pet_web/.DS_Store
+pet_web/npm-debug.log*
+pet_web/yarn-debug.log*
+pet_web/yarn-error.log*
+
+# ===========================
+# .NET / ASP.NET Core (Backend)
+# ===========================
+BE_PetWeb_API/**/bin/
+BE_PetWeb_API/**/obj/
+BE_PetWeb_API/**/*.user
+BE_PetWeb_API/**/*.suo
+BE_PetWeb_API/**/*.csproj.user
+BE_PetWeb_API/**/.vs/
+BE_PetWeb_API/**/Migrations/
+BE_PetWeb_API/**/Migrations_Backup/
+BE_PetWeb_API/**/*.tmp
+BE_PetWeb_API/**/*.Backup.tmp
+
+# ===========================
+# UPLOADED FILES (wwwroot)
+# ===========================
+BE_PetWeb_API/**/wwwroot/uploads/
+
+# ===========================
+# DATABASE & LOGS
+# ===========================
+*.db
+*.sqlite
+*.log
+*.mdf
+*.ldf
+
+# ===========================
+# IDE / EDITOR
+# ===========================
+.vscode/
+.idea/
+*.swp
+*.swo
+Thumbs.db
+.DS_Store
+
+# ===========================
+# ADMIN SCRIPTS (nhạy cảm)
+# ===========================
+TaoTaiKhoanAdmin.txt
+BE_PetWeb_API/**/test_admin_setup.ps1
+
+# ===========================
+# BUILD ARTIFACTS
+# ===========================
+dist/
+*.nupkg
+*.zip
