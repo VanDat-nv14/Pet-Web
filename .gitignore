@@ -1,15 +1,25 @@
 # ===========================
 # SECRETS & ENVIRONMENT FILES
 # ===========================
+
+# Frontend .env (chứa key thật - không commit)
 .env
 .env.local
 .env.development
 .env.production
 .env.staging
-appsettings.json
+
+# Backend .env (chứa key thật - không commit)
+BE_PetWeb_API/**/.env
+
+# Backend: appsettings.Development.json chứa key thật - không commit
 appsettings.Development.json
 appsettings.Production.json
+
+# appsettings.json chỉ chứa giá trị rỗng → được commit lên GitHub
+# .env.example và appsettings.example.json → template tham khảo, được commit
 !appsettings.example.json
+!.env.example
 
 # ===========================
 # NODE / REACT (Frontend)

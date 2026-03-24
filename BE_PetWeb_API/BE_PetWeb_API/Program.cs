@@ -8,6 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
+
+var envPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
+if (File.Exists(envPath))
+    DotNetEnv.Env.Load(envPath);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Cấu hình logging chi tiết hơn
