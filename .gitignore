@@ -67,6 +67,29 @@ Thumbs.db
 # ===========================
 TaoTaiKhoanAdmin.txt
 BE_PetWeb_API/**/test_admin_setup.ps1
+BE_PetWeb_API/**/update_datetime_services.ps1
+
+# ===========================
+# DEBUG / TEST FILES
+# ===========================
+**/debug_*.js
+**/debug_*.md
+**/test_*.js
+**/quick_debug_*.js
+**/test_realtime_*.js
+timezone_test.js
+
+# ===========================
+# ASP.NET DEFAULT TEMPLATE (không dùng)
+# ===========================
+**/WeatherForecast.cs
+**/WeatherForecastController.cs
+**/*.http
+
+# ===========================
+# PLACEHOLDER FILES
+# ===========================
+**/.gitkeep
 
 # ===========================
 # BUILD ARTIFACTS
